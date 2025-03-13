@@ -14,8 +14,9 @@
 #include <sys/socket.h>
 #include <arpa/inet.h>		// ntohs, htons
 #include <stdexcept>            // runtime_error
-#include <cstring>		// memset
 #include <cerrno>
+#include <cstring>		// memset
+#include <cstdio>
 #include <netdb.h>			// getaddrinfo, freeaddrinfo
 #include <unistd.h>			// close
 /*
@@ -117,13 +118,14 @@ int VSocket::EstablishConnection( const char * hostip, int port ) {
             struct sockaddr_in  host4;
             memset( (char *) &host4, 0, sizeof( host4 ) );
             host4.sin_family = AF_INET;
+            printf("%s\n",hostip);
             st = inet_pton( AF_INET, hostip, &host4.sin_addr );
             if ( -1 == st ) {
                throw( std::runtime_error( "VSocket::DoConnect, inet_pton" ));
             }
             host4.sin_port = htons( port );
-            st = connect( idSocket, (sockaddr *) &host4, sizeof( host4 ) );
             printf("Entras\n");
+            st = connect( this->idSocket, (sockaddr *) &host4, sizeof( host4 ) );
             if ( -1 == st ) {
                 perror("Error en connect");
                throw( std::runtime_error( "VSocket::DoConnect, connect" ));
