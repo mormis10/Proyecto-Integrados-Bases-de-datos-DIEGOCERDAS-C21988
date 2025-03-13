@@ -20,7 +20,7 @@ int main( int argc, char * argv[] ) {
 
    s = new Socket( 's' );
    printf("Ven bailalo, ay ven bailalo\n");
-   s->MakeConnection( osi, 80 );
+   s->MakeConnection( ose, 80 );
    printf("ZANNDUNGUEA\n");
    s->Write( whale );
    s->Read( a, 512 );
