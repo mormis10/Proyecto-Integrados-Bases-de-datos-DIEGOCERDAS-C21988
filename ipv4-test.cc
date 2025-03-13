@@ -19,7 +19,9 @@ int main( int argc, char * argv[] ) {
    char a[512];
 
    s = new Socket( 's' );
+   printf("Ven bailalo, ay ven bailalo\n");
    s->MakeConnection( osi, 80 );
+   printf("ZANNDUNGUEA\n");
    s->Write( whale );
    s->Read( a, 512 );
    printf( "%s\n", a);

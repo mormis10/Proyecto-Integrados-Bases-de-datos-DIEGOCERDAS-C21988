@@ -15,7 +15,7 @@
 #include <arpa/inet.h>          // ntohs
 #include <unistd.h>		// write, read
 #include <cstring>
-#include <stdexcept>
+#include <stdexcept>   // esto es para la biblio de runtime error
 #include <stdio.h>		// printf
 
 #include "Socket.h"		// Derived class
@@ -87,15 +87,18 @@ int Socket::MakeConnection( const char *host, const char *service ) {
   *
  **/
 size_t Socket::Read( void * buffer, size_t size ) {
+    // Aquí tenemos que utilizar la función de read
+    // para los parámetros ocupamos el id del socket-el buffer y el tamaño del buffer
+    ssize_t read_bytes = read(this->idSocket,buffer,size);
 
-   int st = -1;
+    if(read_bytes == -1){
+        throw std::runtime_error("Ocurrió un error obteniendo la cantidad de bytes que debemos de leer\n");
+    }
 
-   if ( -1 == st ) {
-      throw std::runtime_error( "Socket::Read( void *, size_t )" );
-   }
+    // Ahora toca castearlo para que vuelva a ser un entero sin signo 
+    static_cast<size_t>(read_bytes);
 
-   return st;
-
+   return read_bytes;
 }
 
 
@@ -109,13 +112,13 @@ size_t Socket::Read( void * buffer, size_t size ) {
  **/
 size_t Socket::Write( const void * buffer, size_t size ) {
 
-   int st = -1;
-
-   if ( -1 == st ) {
-      throw std::runtime_error( "Socket::Write( void *, size_t )" );
+   ssize_t written_bytes = write(this->idSocket,buffer,size);
+   if(written_bytes == -1){
+     throw std::runtime_error("Ocurrió un error durante la lectura\n");
    }
-
-   return st;
+// Aquí toca volver a hacer el casteo nacho
+   static_cast<size_t>(written_bytes);
+   return written_bytes;
 
 }
 
@@ -128,14 +131,6 @@ size_t Socket::Write( const void * buffer, size_t size ) {
   *
  **/
 size_t Socket::Write( const char * text ) {
-
-   int st = -1;
-
-   if ( -1 == st ) {
-      throw std::runtime_error( "Socket::Write( char * )" );
-   }
-
-   return st;
-
+   return Write(static_cast<const void *>(text), strlen(text));
 }
 

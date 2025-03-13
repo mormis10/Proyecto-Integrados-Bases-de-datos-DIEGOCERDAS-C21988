@@ -15,6 +15,7 @@
 #include <arpa/inet.h>		// ntohs, htons
 #include <stdexcept>            // runtime_error
 #include <cstring>		// memset
+#include <cerrno>
 #include <netdb.h>			// getaddrinfo, freeaddrinfo
 #include <unistd.h>			// close
 /*
@@ -24,6 +25,7 @@
 //#include <sys/types.h>
 */
 #include "VSocket.h"
+
 
 
 /**
@@ -37,12 +39,40 @@
   *
  **/
 void VSocket::BuildSocket( char t, bool IPv6 ){
+    this->IPv6 = IPv6;
+    this->type = t;
 
-   int st = -1;
+    // tenemos que ver el tipo de dominio, cuando es de tipo IPv6 utilizamos el dominio AF_INET6 y en caso de IPv4 utilizamos AF_INET
+    int domain;
+   // debería de utilizar más el operador terniario
+   int socket_type = -1;
+    if(IPv6){
+        domain = AF_INET6;
+    }else{
+        domain = AF_INET;
+    }
+    
+    if(this->type == 's'){
+      socket_type = SOCK_STREAM;
+      printf("Aquí entró\n");
 
-   if ( -1 == st ) {
-      throw std::runtime_error( "VSocket::BuildSocket, (reason)" );
-   }
+    }else if(this->type == 'd'){
+        socket_type = SOCK_DGRAM;
+    }
+
+    if(socket_type == -1){
+        throw std::runtime_error("VSocket::BuildSocket - Tipo de socket inválido");
+    }
+
+    //Ahora utilizo la biblioteca para crear el socket
+
+    this->idSocket = socket(domain,socket_type,0);
+
+    if(this->idSocket == -1){
+        throw std::runtime_error("VSocket::BuildSocket - Error al crear el socket");
+    }else{
+        printf("Hecho con éxito nachito\n");
+    }
 
 }
 
@@ -82,8 +112,22 @@ void VSocket::Close(){
   *
  **/
 int VSocket::EstablishConnection( const char * hostip, int port ) {
-
    int st = -1;
+   this->port = port;
+            struct sockaddr_in  host4;
+            memset( (char *) &host4, 0, sizeof( host4 ) );
+            host4.sin_family = AF_INET;
+            st = inet_pton( AF_INET, hostip, &host4.sin_addr );
+            if ( -1 == st ) {
+               throw( std::runtime_error( "VSocket::DoConnect, inet_pton" ));
+            }
+            host4.sin_port = htons( port );
+            st = connect( idSocket, (sockaddr *) &host4, sizeof( host4 ) );
+            printf("Entras\n");
+            if ( -1 == st ) {
+                perror("Error en connect");
+               throw( std::runtime_error( "VSocket::DoConnect, connect" ));
+            }
 
    if ( -1 == st ) {
       throw std::runtime_error( "VSocket::EstablishConnection" );
@@ -103,6 +147,8 @@ int VSocket::EstablishConnection( const char * hostip, int port ) {
   *
  **/
 int VSocket::EstablishConnection( const char *host, const char *service ) {
+
+
    int st = -1;
 
    throw std::runtime_error( "VSocket::EstablishConnection" );
