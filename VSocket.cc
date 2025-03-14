@@ -156,9 +156,7 @@ int VSocket::EstablishConnection( const char *host, const char *service ) {
    //Aquí específicamos que queremos un socket TCP
 
    //busvamos la dirección del servidor
-   int status;
    if(getaddrinfo(host,service,&hints,&res)!= 0){
-    std::cerr << "Error en getaddrinfo: " << gai_strerror(status) << std::endl;
      throw std::runtime_error("Falló el proceso de getaddinfo\n");
    }
 
