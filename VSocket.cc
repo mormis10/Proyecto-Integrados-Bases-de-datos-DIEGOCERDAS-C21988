@@ -150,6 +150,22 @@ int VSocket::EstablishConnection( const char *host, const char *service ) {
 
 
    int st = -1;
+   struct  addrinfo hints, *res, *p;
+   // para esto tenemos que con hints es la estrucutra par definir el tipo de conexión que se desea 
+   //res va a tener la lista de direcciones y con p vamos a recorrer las direcciones obtenidas 
+   
+   // esto ya lo sabemos solo estamos añadiendo ceros dentro de hints para limpiarlo en caso de que hubiera basura
+   memset(&hints,0,sizeof hints);
+  
+  // Asignamos AF_INET6 para indicarle que deseamos solamente conexiones de tipo Ipv6
+   hints.ai_family = AF_INET6;
+   //Aquí específicamos que queremos un socket TCP
+
+   //busvamos la dirección del servidor
+   
+
+
+   
 
    throw std::runtime_error( "VSocket::EstablishConnection" );
 
