@@ -42,7 +42,10 @@
 void VSocket::BuildSocket( char t, bool IPv6 ){
     this->IPv6 = IPv6;
     this->type = t;
-
+    if(IPv6){
+      printf("Entra\n");
+      return;
+    }
     // tenemos que ver el tipo de dominio, cuando es de tipo IPv6 utilizamos el dominio AF_INET6 y en caso de IPv4 utilizamos AF_INET
     int domain = AF_INET;
    // debería de utilizar más el operador terniario
