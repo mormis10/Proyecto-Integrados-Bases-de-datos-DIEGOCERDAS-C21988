@@ -66,7 +66,7 @@ void VSocket::BuildSocket( char t, bool IPv6 ){
     }
 
     //Ahora utilizo la biblioteca para crear el socket
-
+    // para crear el socket y obtener su id ocupo el dominio y el tipo de socket
     this->idSocket = socket(domain,socket_type,0);
 
     if(this->idSocket == -1){
@@ -118,13 +118,11 @@ int VSocket::EstablishConnection( const char * hostip, int port ) {
             struct sockaddr_in  host4;
             memset( (char *) &host4, 0, sizeof( host4 ) );
             host4.sin_family = AF_INET;
-            printf("%s\n",hostip);
             st = inet_pton( AF_INET, hostip, &host4.sin_addr );
             if ( -1 == st ) {
                throw( std::runtime_error( "VSocket::DoConnect, inet_pton" ));
             }
             host4.sin_port = htons( port );
-            printf("Entras\n");
             st = connect( this->idSocket, (sockaddr *) &host4, sizeof( host4 ) );
             if ( -1 == st ) {
                 perror("Error en connect");
