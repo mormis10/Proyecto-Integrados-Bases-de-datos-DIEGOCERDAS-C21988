@@ -44,23 +44,10 @@ void VSocket::BuildSocket( char t, bool IPv6 ){
     this->type = t;
 
     // tenemos que ver el tipo de dominio, cuando es de tipo IPv6 utilizamos el dominio AF_INET6 y en caso de IPv4 utilizamos AF_INET
-    int domain;
+    int domain = AF_INET;
    // debería de utilizar más el operador terniario
-   int socket_type = -1;
-    if(IPv6){
-        domain = AF_INET6;
-    }else{
-        domain = AF_INET;
-    }
+   int socket_type = SOCK_STREAM;
     
-    if(this->type == 's'){
-      socket_type = SOCK_STREAM;
-      printf("Aquí entró\n");
-
-    }else if(this->type == 'd'){
-        socket_type = SOCK_DGRAM;
-    }
-
     if(socket_type == -1){
         throw std::runtime_error("VSocket::BuildSocket - Tipo de socket inválido");
     }
@@ -95,12 +82,16 @@ VSocket::~VSocket() {
   *
  **/
 void VSocket::Close(){
-   int st = -1;
-
-   if ( -1 == st ) {
-      throw std::runtime_error( "VSocket::Close()" );
+   if(this->idSocket != -1){
+    //busca el id dl socket y lo cierra
+    if(close(this->idSocket) == -1){
+       throw std::runtime_error("VSocket::Close()" );
+    }
+    printf("Cierre realizado con éxito\n");
+    this->idSocket = -1;
+   }else{
+     throw std::runtime_error( "VSocket::Close()" );
    }
-
 }
 
 
@@ -162,12 +153,40 @@ int VSocket::EstablishConnection( const char *host, const char *service ) {
    //Aquí específicamos que queremos un socket TCP
 
    //busvamos la dirección del servidor
+   if(getaddrinfo(host,service,&hints,&res)!= 0){
+     throw std::runtime_error("Falló el proceso de getaddinfo\n");
+   }
+
+   //Ahora sí vamos a recorrer el arrego de direcciones que tenemos
+   // lo recorremos cómo sí fuera una lista enlazada
+
+   for(p = res; p != nullptr; p = p->ai_next){
+    //creamos el socket
+    // obtenemos el id del socket
+    this->idSocket = socket(p->ai_family,p->ai_socktype,p->ai_protocol);
+    // si la conexión falla, continue con la siguiente
+     if(this->idSocket == -1){
+      continue;
+     }
+     // en caso de que sí fuera exitoso
+     // en ese caso sí nos conectamos 
+
+     st = connect(this->idSocket,p->ai_addr,p->ai_addrlen);
+     // en caso de que la conexión se haya realizado de manera correcta 
+     // dejamos de recorrer el arreglo 
+     if(st == 0){
+       break;
+     }
+     // en caso de que algo haya pasado mal, entonces cerramos el socket
+     close(this->idSocket);
+   }
+   // liberamos la memoria dinámica alojada en res
+    freeaddrinfo(res);
+
    
-
-
-   
-
+   if(st == -1){
    throw std::runtime_error( "VSocket::EstablishConnection" );
+   }
 
    return st;
 

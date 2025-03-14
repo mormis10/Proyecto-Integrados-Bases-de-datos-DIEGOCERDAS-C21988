@@ -26,6 +26,7 @@ int main( int argc, char * argv[] ) {
    s->Write( whale );
    s->Read( a, 512 );
    printf( "%s\n", a);
+   s->Close();
 
 }
 
