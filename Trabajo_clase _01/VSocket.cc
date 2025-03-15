@@ -19,6 +19,7 @@
 #include <cstdio>
 #include <netdb.h>			// getaddrinfo, freeaddrinfo
 #include <unistd.h>			// close
+#include <iostream>
 /*
 #include <cstddef>
 #include <cstdio>
@@ -42,14 +43,15 @@
 void VSocket::BuildSocket( char t, bool IPv6 ){
     this->IPv6 = IPv6;
     this->type = t;
+    int domain;
+    int socket_type = SOCK_STREAM;
     if(IPv6){
-      printf("Entra\n");
+      domain = AF_INET6;
       return;
     }
     // tenemos que ver el tipo de dominio, cuando es de tipo IPv6 utilizamos el dominio AF_INET6 y en caso de IPv4 utilizamos AF_INET
-    int domain = AF_INET;
+    domain = AF_INET;
    // debería de utilizar más el operador terniario
-   int socket_type = SOCK_STREAM;
     
     if(socket_type == -1){
         throw std::runtime_error("VSocket::BuildSocket - Tipo de socket inválido");
@@ -142,32 +144,38 @@ int VSocket::EstablishConnection( const char * hostip, int port ) {
   * @param      char * service: process address, example "http"
   *
  **/
+
 int VSocket::EstablishConnection( const char *host, const char *service ) {
-
-
    int st = -1;
    struct  addrinfo hints, *res, *p;
    // para esto tenemos que con hints es la estrucutra par definir el tipo de conexión que se desea 
    //res va a tener la lista de direcciones y con p vamos a recorrer las direcciones obtenidas 
    
    // esto ya lo sabemos solo estamos añadiendo ceros dentro de hints para limpiarlo en caso de que hubiera basura
-   memset(&hints,0,sizeof hints);
+   memset(&hints,0,sizeof(addrinfo));
   
   // Asignamos AF_INET6 para indicarle que deseamos solamente conexiones de tipo Ipv6
    hints.ai_family = AF_INET6;
    //Aquí específicamos que queremos un socket TCP
 
    //busvamos la dirección del servidor
-   if(getaddrinfo(host,service,&hints,&res)!= 0){
-     throw std::runtime_error("Falló el proceso de getaddinfo\n");
+   int status;
+   status = getaddrinfo(host,service,&hints,&res);
+   if(status != 0){
+     std::cerr << "Error en getaddrinfo: " << gai_strerror(status) << std::endl;
    }
+
+  
 
    //Ahora sí vamos a recorrer el arrego de direcciones que tenemos
    // lo recorremos cómo sí fuera una lista enlazada
 
+   
+
    for(p = res; p != nullptr; p = p->ai_next){
     //creamos el socket
     // obtenemos el id del socket
+    std::cout<<p->ai_protocol <<"\n";
     this->idSocket = socket(p->ai_family,p->ai_socktype,p->ai_protocol);
     // si la conexión falla, continue con la siguiente
      if(this->idSocket == -1){
@@ -175,7 +183,6 @@ int VSocket::EstablishConnection( const char *host, const char *service ) {
      }
      // en caso de que sí fuera exitoso
      // en ese caso sí nos conectamos 
-
      st = connect(this->idSocket,p->ai_addr,p->ai_addrlen);
      // en caso de que la conexión se haya realizado de manera correcta 
      // dejamos de recorrer el arreglo 

@@ -12,7 +12,7 @@
 #include "Socket.h"
 
 int main( int argc, char * argv[] ) {
-   const char * lab = "fe80::4161:e292:8c1d:e3c0%enp0s31f6";
+   const char * lab = "fe80::215:5dff:fe6c:5141%eth0";
    const char * request = "GET / HTTP/1.1\r\nhost: redes.ecci\r\n\r\n";
 
    Socket s( 's', true );
