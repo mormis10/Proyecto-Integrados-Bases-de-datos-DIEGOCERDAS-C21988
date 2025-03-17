@@ -24,6 +24,7 @@ class VSocket {
       void Close();
       int EstablishConnection( const char *, int );
       int EstablishConnection( const char *, const char * );
+      int EstablishConnection( const char *, int ,bool);
       virtual int MakeConnection( const char *, int ) = 0;
       virtual int MakeConnection( const char *, const char * ) = 0;
 

@@ -94,8 +94,6 @@ void VSocket::Close(){
     }
     printf("Cierre realizado con éxito\n");
     this->idSocket = -1;
-   }else{
-     throw std::runtime_error( "VSocket::Close()" );
    }
 }
 
@@ -135,7 +133,25 @@ int VSocket::EstablishConnection( const char * hostip, int port ) {
 
 }
 
-
+int VSocket::EstablishConnection( const char * hostip, int port ,bool prove){
+  struct sockaddr_in6  host6;
+            struct sockaddr * ha;
+            int st;
+            memset( &host6, 0, sizeof( host6 ) );
+            host6.sin6_family = AF_INET6;
+            st = inet_pton( AF_INET6, hostip, &host6.sin6_addr );
+            if ( 0 <= st ) {	// 0 means invalid address, -1 means address error
+               throw std::runtime_error( "Socket::Connect( const char *, int ) [inet_pton]" );
+            }
+            host6.sin6_port = htons( port );
+            ha = (struct sockaddr *) &host6;
+            size_t len;
+            len = sizeof( host6 );
+            st = connect( this->idSocket, ha, len );
+            if ( -1 == st ) {
+               throw std::runtime_error( "Socket::Connect( const char *, int ) [connect]" );
+            }
+}
 /**
   * EstablishConnection method
   *   use "connect" Unix system call
@@ -143,8 +159,8 @@ int VSocket::EstablishConnection( const char * hostip, int port ) {
   * @param      char * host: host address in dns notation, example "os.ecci.ucr.ac.cr"
   * @param      char * service: process address, example "http"
   *
- **/
-
+ 
+**/
 int VSocket::EstablishConnection( const char *host, const char *service ) {
    int st = -1;
    struct  addrinfo hints, *res, *p;
@@ -152,15 +168,18 @@ int VSocket::EstablishConnection( const char *host, const char *service ) {
    //res va a tener la lista de direcciones y con p vamos a recorrer las direcciones obtenidas 
    
    // esto ya lo sabemos solo estamos añadiendo ceros dentro de hints para limpiarlo en caso de que hubiera basura
-   memset(&hints,0,sizeof(addrinfo));
+   memset(&hints,0,sizeof(struct addrinfo));
   
   // Asignamos AF_INET6 para indicarle que deseamos solamente conexiones de tipo Ipv6
    hints.ai_family = AF_INET6;
+   hints.ai_socktype = SOCK_STREAM;
+   hints.ai_flags = 0;
+   hints.ai_protocol = 0;
    //Aquí específicamos que queremos un socket TCP
 
    //busvamos la dirección del servidor
    int status;
-   status = getaddrinfo(host,service,&hints,&res);
+   status = getaddrinfo(host,"8080",&hints,&res);
    if(status != 0){
      std::cerr << "Error en getaddrinfo: " << gai_strerror(status) << std::endl;
    }
@@ -171,7 +190,7 @@ int VSocket::EstablishConnection( const char *host, const char *service ) {
    // lo recorremos cómo sí fuera una lista enlazada
 
    
-
+   
    for(p = res; p != nullptr; p = p->ai_next){
     //creamos el socket
     // obtenemos el id del socket
@@ -183,6 +202,8 @@ int VSocket::EstablishConnection( const char *host, const char *service ) {
      }
      // en caso de que sí fuera exitoso
      // en ese caso sí nos conectamos 
+
+     //std::cout<<p->ai_addr;
      st = connect(this->idSocket,p->ai_addr,p->ai_addrlen);
      // en caso de que la conexión se haya realizado de manera correcta 
      // dejamos de recorrer el arreglo 
@@ -199,6 +220,7 @@ int VSocket::EstablishConnection( const char *host, const char *service ) {
    if(st == -1){
    throw std::runtime_error( "VSocket::EstablishConnection" );
    }
+
 
    return st;
 

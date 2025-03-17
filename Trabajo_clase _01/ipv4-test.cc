@@ -22,7 +22,7 @@ int main( int argc, char * argv[] ) {
    char a[512];
 
    s = new Socket( 's' );
-   s->MakeConnection( osi, 80 );
+   s->MakeConnection( ose, 80 );
    s->Write( whale );
    s->Read( a, 512 );
    printf( "%s\n", a);
