@@ -75,7 +75,7 @@ VSocket::~VSocket() { this->Close(); }
 
 /**
  * Close method
- *    use Unix close system call (once opened a socket is managed like a file in
+ *    use Unix close system call (on s.Read( a, 512 );ce opened a socket is managed like a file in
  *Unix)
  *
  **/
@@ -88,7 +88,7 @@ void VSocket::Close() {
     printf("Cierre realizado con éxito\n");
     this->idSocket = -1;
   } else {
-    throw std::runtime_error("VSocket::Close()");
+    //throw std::runtime_error("VSocket::Close()");
   }
 }
 
@@ -145,6 +145,7 @@ int VSocket::EstablishConnection(const char *hostip, int port, bool prove) {
   if (-1 == st) {
     throw std::runtime_error("Socket::Connect( const char *, int ) [connect]");
   }
+  return st;
 }
 /**
   * EstablishConnection method
@@ -153,7 +154,7 @@ int VSocket::EstablishConnection(const char *hostip, int port, bool prove) {
   * @param      char * host: host address in dns notation, example
 "os.ecci.ucr.ac.cr"
   * @param      char * service: process address, example "http"
-  *
+  * s.Read( a, 512 );
 
 **/
 int VSocket::EstablishConnection(const char *host, const char *service) {

@@ -12,7 +12,7 @@
 #include "Socket.h"
 
 int main( int argc, char * argv[] ) {
-   const char * lab = "fe80::215:5dff:fe07:5930%eth0";
+   const char * lab = "fe80::2a94:1a18:5afa:767e%enp0s31f6";
    const char * request = "GET / HTTP/1.1\r\nhost: redes.ecci\r\n\r\n";
 
    Socket s( 's', true );
@@ -22,8 +22,12 @@ int main( int argc, char * argv[] ) {
    s.MakeConnection( lab, (char *) "http" );
    s.Write(  request );
    printf("Pasa de aquí\n");
-   s.Read( a, 512 );
-   printf( "%s esto es lo qu nos está retornando\n", a);
-   printf("%s",a);
+   int reading;
+   do{
+    reading =  s.Read( a, 512 );
+    printf("%s",a);
+   }while(reading != 0);
+   
+   
    s.Close();
 }
