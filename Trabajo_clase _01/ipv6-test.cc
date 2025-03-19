@@ -26,7 +26,6 @@ int main( int argc, char * argv[] ) {
     reading =  s.Read( a, 512 );
     printf("%s",a);
    }while(reading != 0);
-   
-   
+      
    s.Close();
 }
