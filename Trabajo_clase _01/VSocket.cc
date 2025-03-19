@@ -179,7 +179,7 @@ int VSocket::EstablishConnection(const char *host, const char *service) {
 
   // busvamos la dirección del servidor
   int status;
-  status = getaddrinfo(host, "8080", &hints, &res);
+  status = getaddrinfo(host,"8080", &hints, &res);
   if (status != 0) {
     std::cerr << "Error en getaddrinfo: " << gai_strerror(status) << std::endl;
   }

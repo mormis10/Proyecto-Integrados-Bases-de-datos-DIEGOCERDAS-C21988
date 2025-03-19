@@ -21,7 +21,6 @@ int main( int argc, char * argv[] ) {
    memset( a, 0, 512 );
    s.MakeConnection( lab, (char *) "http" );
    s.Write(  request );
-   printf("Pasa de aquí\n");
    int reading;
    do{
     reading =  s.Read( a, 512 );
