@@ -42,7 +42,12 @@ void VSocket::BuildSocket(char t, bool IPv6) {
   this->IPv6 = IPv6;
   this->type = t;
   int domain;
-  int socket_type = SOCK_STREAM;
+  int socket_type;
+   if(this->type == 's'){
+     socket_type = SOCK_STREAM;
+   }else{
+    socket_type = SOCK_DGRAM;
+   }
   if (IPv6) {
     domain = AF_INET6;
     return;
@@ -229,7 +234,22 @@ int VSocket::EstablishConnection(const char *host, const char *service) {
   *
  **/
 int VSocket::Bind( int port ) {
-   int st = -1;
+  //Este método se encarga de de asignar una dirección IP y un número de puerto al socket
+  //sin este bind el sistema operativo no sabe qué puerto escuchar, le dice al sistema operativo,
+  //cualquier paquete que pase por aquí me lo das a mi
+
+  struct sockaddr_in server;
+  memset(&server, 0,sizeof(server));
+  server.sin_family = AF_INET;
+  int st = -1;
+  //vamos a escuchar cualquier interfaz de red disponible
+  server.sin_addr.s_addr = INADDR_ANY;
+  server.sin_port = htons(port);
+
+   st = bind(this->idSocket,(const struct sockaddr *)&server,sizeof(server));
+   if(st<0){
+    throw std::runtime_error("Ocurrió un error con el bind\n");
+   }
 
    return st;
 
@@ -247,10 +267,9 @@ int VSocket::Bind( int port ) {
   *
  **/
 size_t VSocket::sendTo( const void * buffer, size_t size, void * addr ) {
-   int st = -1;
-
-   return st;
-
+   int st = sendto(this->idSocket, buffer, size, 0, (const struct sockaddr *)addr, sizeof(struct sockaddr_in));
+    if (st < 0) perror("sendto");
+    return (st >= 0) ? static_cast<size_t>(st) : 0;
 }
 
 
@@ -267,8 +286,8 @@ size_t VSocket::sendTo( const void * buffer, size_t size, void * addr ) {
   *
  **/
 size_t VSocket::recvFrom( void * buffer, size_t size, void * addr ) {
-   int st = -1;
-
-   return st;
-
+     socklen_t addr_len = sizeof(struct sockaddr_in);
+    int st = recvfrom(this->idSocket, buffer, size, 0, (struct sockaddr *)addr, &addr_len);
+    if (st < 0) perror("recvfrom");
+    return (st >= 0) ? static_cast<size_t>(st) : 0;
 }

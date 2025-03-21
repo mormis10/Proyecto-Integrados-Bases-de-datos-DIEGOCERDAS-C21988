@@ -9,8 +9,8 @@ CXXFLAGS := -g -c
 DEPS := Socket.h
 TARGETS := ipv4-udp-client.out ipv4-udp-server.out
 
-ALL := $(TARGETS)
-$(info $$TARGETS = $(TARGETS))
+all: $(TARGETS)
+#$(info $$TARGETS = $(TARGETS))
 
 %.o: %.cc $(DEPS)
 	$(CXX) $(CXXFLAGS) $<
