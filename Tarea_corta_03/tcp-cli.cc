@@ -62,10 +62,10 @@ int main( int argc, char * argv[] ) {
       printf( "Connecting non-SSL" );
       if ( 4 == ipVer ) {
          client = new Socket( 's' );		// Create an IPv4 TCP socket
-         client->EstablishConnection( whalev4, 80 ,false);
+         client->EstablishConnection( whalev4, 80);
          printf( " IPv4\n" );
       } else {
-         client = new Socket( 's', true );	// Create an IPv6 TCP socket
+         client = new Socket( 's', true);	// Create an IPv6 TCP socket
          client->EstablishConnection( whalev6, "http", true);
          printf( " IPv6\n" );
       }
