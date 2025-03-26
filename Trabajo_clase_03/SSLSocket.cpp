@@ -30,13 +30,12 @@
   *  @param     bool ipv6: if we need a IPv6 socket
   *
  **/
-SSLSocket::SSLSocket( bool IPv6 ) {
+SSLSocket::SSLSocket( char* hostip, int port, bool IPv6 ) {
 
    this->BuildSocket( 's', IPv6 );
-
+   this->EstablishConnection(hostip,port);
    this->SSLContext = nullptr;
    this->SSLStruct = nullptr;
-
    this->Init();					// Initializes to client context
 
 }
@@ -65,7 +64,9 @@ SSLSocket::SSLSocket( char * certFileName, char * keyFileName, bool IPv6 ) {
 SSLSocket::SSLSocket( int id ) {
 
    this->BuildSocket( id );
-
+   this->SSLContext = nullptr;
+   this->SSLStruct = nullptr;
+    this->Init();
 }
 
 
@@ -96,10 +97,28 @@ SSLSocket::~SSLSocket() {
   *
  **/
 void SSLSocket::Init( bool serverContext ) {
-   SSL * ssl = nullptr;
 
    this->InitContext( serverContext );
+   //Aquí creamos un nuevo objeto de tipo sslStruct
+   this->SSLStruct = SSL_new(reinterpret_cast<SSL_CTX *>(this->SSLContext));
+   if(nullptr == this->SSLStruct) {
+      throw std::runtime_error("Error creando el objeto nachito\n");
+   }
+   // Asignamos el id dell socket a nuestra estructura SSl
+   SSL_set_fd(reinterpret_cast<SSL *>(this->SSLStruct), this->idSocket);
+    //tenemos que conectarnos o aceptar la conexión
+   if(serverContext){
+      if (SSL_accept(reinterpret_cast<SSL *>(this->SSLStruct)) <= 0) {
+         throw std::runtime_error("Error al aceptar la conexión SSL");
+      }
+   }else{
+      if (SSL_connect(reinterpret_cast<SSL *>(this->SSLStruct)) <= 0) {
+         throw std::runtime_error("Error al conectar con el servidor SSL");
+      }
+   }
 
+  
+  printf("Realizado con éxito nachito\n");
 }
 
 
@@ -113,15 +132,26 @@ void SSLSocket::Init( bool serverContext ) {
 void SSLSocket::InitContext( bool serverContext ) {
    const SSL_METHOD * method;
    SSL_CTX * context;
+    
 
+    // Va a depender de si somos clientes o somos el propio server
    if ( serverContext ) {
+      method = TLS_server_method();
    } else {
+      method = TLS_client_method();;
    }
-
+    
+    context = SSL_CTX_new(method);
    if ( nullptr == method ) {
       throw std::runtime_error( "SSLSocket::InitContext( bool )" );
    }
 
+   //Ahora tenemos que castearlo y adaptarlo a nuestra propia estructura }
+   if(context == nullptr){
+       throw std::runtime_error("No se pudo crear el contexto SSL, =(");
+   }
+
+   this->SSLContext = reinterpret_cast<void *>(context);
 }
 
 
@@ -170,36 +200,10 @@ int SSLSocket::Connect( const char * hostName, int port ) {
 int SSLSocket::Connect( const char * host, const char * service ) {
    int st;
 
-   st = this->MakeConnection( host, service );
+   st = this->EstablishConnection( host, service );
 
    return st;
-
 }
-
-
-/**
-  *  Read
-  *     use SSL_read to read data from an encrypted channel
-  *
-  *  @param	void * buffer to store data read
-  *  @param	size_t size, buffer's capacity
-  *
-  *  @return	size_t byte quantity read
-  *
-  *  Reads data from secure channel
-  *
- **/
-size_t SSLSocket::Read( void * buffer, size_t size ) {
-   int st = -1;
-
-   if ( -1 == st ) {
-      throw std::runtime_error( "SSLSocket::Read( void *, size_t )" );
-   }
-
-   return st;
-
-}
-
 
 /**
   *  Write
@@ -218,30 +222,6 @@ size_t SSLSocket::Write( const char * string ) {
 
    if ( -1 == st ) {
       throw std::runtime_error( "SSLSocket::Write( const char * )" );
-   }
-
-   return st;
-
-}
-
-
-/**
-  *  Write
-  *     use SSL_write to write data to an encrypted channel
-  *
-  *  @param	void * buffer to store data read
-  *  @param	size_t size, buffer's capacity
-  *
-  *  @return	size_t byte quantity written
-  *
-  *  Reads data from secure channel
-  *
- **/
-size_t SSLSocket::Write( const void * buffer, size_t size ) {
-   int st = -1;
-
-   if ( -1 == st ) {
-      throw std::runtime_error( "SSLSocket::Write( void *, size_t )" );
    }
 
    return st;
@@ -283,3 +263,44 @@ const char * SSLSocket::GetCipher() {
    return SSL_get_cipher( reinterpret_cast<SSL *>( this->SSLStruct ) );
 
 }
+
+/**
+ * Read method
+ *   use "read" Unix system call (man 3 read)
+ *
+ * @param      void * buffer: buffer to store data read from socket
+ * @param      int size: buffer capacity, read will stop if buffer is full
+ *
+ **/
+size_t SSLSocket::Read(void *buffer, size_t size) {
+   int read_bytes = SSL_read(reinterpret_cast<SSL *>(this->SSLStruct), buffer, size);
+    
+
+  if (read_bytes == -1) {
+    throw std::runtime_error("Ocurrió un error obteniendo la cantidad de bytes "
+                             "que debemos de leer\n");
+  }
+  static_cast<size_t>(read_bytes);
+
+  return read_bytes;
+}
+
+/**
+ * Write method
+ *   use "write" Unix system call (man 3 write)
+ *
+ * @param      void * buffer: buffer to store data write to socket
+ * @param      size_t size: buffer capacity, number of bytes to write
+ *
+ **/
+size_t SSLSocket::Write(const void *buffer, size_t size) {
+
+  int written_bytes = SSL_write(reinterpret_cast<SSL *>(this->SSLStruct), buffer, size);
+  if (written_bytes == -1) {
+    throw std::runtime_error("Ocurrió un error durante la lectura\n");
+  }
+  // Aquí toca volver a hacer el casteo nacho
+  static_cast<size_t>(written_bytes);
+  return written_bytes;
+}
+

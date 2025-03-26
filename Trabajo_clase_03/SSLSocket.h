@@ -16,24 +16,23 @@
 #define SSLSocket_h
 
 #include "VSocket.h"
-#include "Socket.h"
+#include <unistd.h>
 
 
-class SSLSocket : public VSocket, public Socket {
+class SSLSocket : public VSocket{
 
    public:
-      SSLSocket( bool IPv6 = false );				// Not possible to create with UDP, client constructor
+      SSLSocket( char* hostip,int port, bool IPv6 = false );				// Not possible to create with UDP, client constructor
       SSLSocket( char *, char *, bool = false );		// For server connections
       SSLSocket( int );
       ~SSLSocket();
       int Connect( const char *, int );
       int Connect( const char *, const char * );
-      size_t Write( const char * );
-      size_t Write( const void *, size_t );
-      size_t Read( void *, size_t );
       void ShowCerts();
       const char * GetCipher();
-
+      size_t Read( void *, size_t );
+      size_t Write( const void *, size_t );
+      size_t Write( const char * );
    private:
       void Init( bool = false );		// Defaults to create a client context, true if server context needed
       void InitContext( bool );

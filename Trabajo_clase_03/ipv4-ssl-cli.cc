@@ -28,16 +28,15 @@ int main( int argc, char * argv[] ) {
 
    if (argc > 1 ) {
       port = 443;
-      client = new SSLSocket();	// Create a new stream socket for IPv4
+      printf("Entra aquí\n");
+      client = new SSLSocket(os,port);	// Create a new stream socket for IPv4
    } else {
       client = new Socket( 's' );
       port = 80;
    }
 
    memset( a, 0 , MAXBUF );
-   client->Connect( os, port );
    client->Write(  (char * ) lego, strlen( lego ) );
    st = client->Read( a, MAXBUF );
    printf( "Bytes read %d\n%s\n", st, a);
-
 }

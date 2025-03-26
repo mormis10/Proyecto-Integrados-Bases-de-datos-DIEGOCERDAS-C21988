@@ -25,13 +25,12 @@ class VSocket {
       int EstablishConnection( const char *, int );
       int EstablishConnection( const char *, const char * );
       int EstablishConnection( const char *, int ,bool);
-      virtual int MakeConnection( const char *, int ) = 0;
-      virtual int MakeConnection( const char *, const char * ) = 0;
       int Bind( int );
       size_t sendTo( const void *, size_t, void * );
       size_t recvFrom( void *, size_t, void * );
       
-
+    virtual size_t Write(const void* buffer, size_t size) = 0;
+    virtual size_t Read(void* buffer, size_t size) = 0;
    protected:
       int idSocket;   // Socket identifier
       bool IPv6;      // Is IPv6 socket?
