@@ -61,6 +61,7 @@ int main( int argc, char * argv[] ) {
    } else {							// Non SSL socket
       printf( "Connecting non-SSL" );
       if ( 4 == ipVer ) {
+        printf("Entra aquí\n");
          client = new Socket( 's' );		// Create an IPv4 TCP socket
          client->EstablishConnection( whalev4, 80);
          printf( " IPv4\n" );

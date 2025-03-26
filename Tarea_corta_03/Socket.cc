@@ -67,7 +67,7 @@ int Socket::MakeConnection(const char *hostip, int port) {
  **/
 int Socket::MakeConnection(const char *host, const char *service) {
 
-  //return this->EstablishConnection(host, service);
+  return 5;
 }
 
 /**

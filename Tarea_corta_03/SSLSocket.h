@@ -25,7 +25,7 @@ class SSLSocket : public VSocket{
       SSLSocket( char* hostip,int port, bool IPv6 = false );				// Not possible to create with UDP, client constructor
       SSLSocket( char *, char *, bool = false );		// For server connections
       SSLSocket( int );
-      SSLSocket(const char*,char*,bool);
+      SSLSocket(const char* hostip, const char* service, bool IPV6);
       ~SSLSocket();
       int Connect( const char *, int );
       int Connect( const char *, const char * );
