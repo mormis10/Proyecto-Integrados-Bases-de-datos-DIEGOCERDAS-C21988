@@ -21,7 +21,6 @@ void FileSystem::load_fat(){
         return;
     }
     // vamos a leer los primeros 4096 bytes y vamos a cargar esa información dentro de nuestro arreglo fat
-
     disk.read(reinterpret_cast<char*>(fat),sizeof(fat));
 }
 
@@ -51,6 +50,7 @@ void FileSystem::create_file(const std::string file_name, const std::string cont
     std::fstream disk(disk_path, std::ios::in | std::ios::out | std::ios::binary);
 
     // movemos el puntero de escritura al bloque que se encuentre libre 
+    // El bloque libre que hemos 
     disk.seekp(sizeof(this->fat) + sizeof(this->directory) + block * BLOCK_SIZE);
     size_t length = sizeof(this->fat) + sizeof(this->directory) + block * BLOCK_SIZE;
     size_t longitud = content.size(); 
@@ -64,7 +64,7 @@ void FileSystem::create_file(const std::string file_name, const std::string cont
     disk.read(buffer,MAX_FILES);
     printf("Verificación de que se guardo el contenido\n");
     printf("%s\n",buffer);
-    this->safe_fat();
+    //this->safe_fat();
     this->save_file(file_name,block);
 
     printf("Archivo Creado con éxito\n");
@@ -78,7 +78,7 @@ void FileSystem::safe_fat(){
 // Volemos a crear una instancia disk con permisos de lectura y escritura
  std::fstream disk(disk_path, std::ios::in | std::ios::out | std::ios::binary);
  // Actualizamos los bloques ocupados de la fat en el archivo
-disk.write(reinterpret_cast<char*>(fat), sizeof(fat));
+ disk.write(reinterpret_cast<char*>(fat), sizeof(fat));
 
 }
 
@@ -138,7 +138,7 @@ void FileSystem::read_file(const std::string file_name){
     disk.read(buffer,MAX_FILES);
     printf("Contenido del archivo '%s':\n", file_name.c_str());
     printf("%s\n",buffer);
-
+    //SIUUUUUUUUU LO LOGRÉE
 }
 
 void FileSystem::format(){
