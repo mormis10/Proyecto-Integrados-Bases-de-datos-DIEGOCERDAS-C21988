@@ -1,9 +1,7 @@
 #include "File_System.hpp"
 
-int main(){
-    FileSystem prueba("disk.mfs");
-    prueba.format();
-    
+
+void simulation(FileSystem* disk){
     std::string figura1 = R"(
      /\\_/\\  
     ( o   o ) 
@@ -12,20 +10,29 @@ int main(){
       ~    ~ 
     )";
 
-    std::string figura2 = R"(
-     .-"      "-.  
-    /            \\ 
-   |,  .-.  .-.  ,| 
-   | )(_o/  \\o_)( | 
-   |/     /\\     \\| 
-    (_     ^^     _) 
-     \\__|IIIIII|__/  
-      | \\IIIIII/ |    
-      \\          /   
-       `-.____.-'   
-    )";
 
-    prueba.create_file("gatito.txt",figura1);
-    prueba.read_file("gatito.txt");
-    return 0;
+    disk->create_file("gatito.txt",figura1);
+    disk->read_file("gatito.txt");
+
+    printf("Primera simulación realizada con éxito\n");
+
+     std::string figura2 = 
+          "=^.^=\n"
+        "( o.o )\n"
+        " > ^ <\n";
+
+      disk->create_file("gatito_kawai",figura2);
+      disk->read_file("gatito_kawai");
+
+
+    printf("Simulaciones realizadas con éxito\n");
+
+}
+
+int main(){
+  FileSystem prueba("disk.mfs");
+  prueba.format();
+  simulation(&prueba);
+
+  return 0;
 }

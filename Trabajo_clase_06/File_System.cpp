@@ -24,8 +24,14 @@ void FileSystem::load_fat(){
     disk.read(reinterpret_cast<char*>(fat),sizeof(fat));
 }
 
-int FileSystem::allocate_block(){
+int FileSystem::allocate_block(size_t string_size){
     // NOS va a dar un índice del primer bloque libre 
+    //Tamos probando 
+    size_t fat_size = sizeof(this->fat[0]);
+    printf("fat size: %ld\n",fat_size);
+    size_t size_needed = (string_size + BLOCK_SIZE - 1) / BLOCK_SIZE; 
+    printf("Espacio necesario: %ld\n",size_needed);
+
     for(int i = 0; i< TOTAL_BLOCKS; i++){
         if(this->fat[i] == -1){
         // ya todo lo que reservé se acabó
@@ -39,8 +45,10 @@ int FileSystem::allocate_block(){
 }
 
 void FileSystem::create_file(const std::string file_name, const std::string content){
-    // primer bloque que se encuentre libre 
-    int block = this->allocate_block();
+    // primer bloque que se encuentre libre
+    size_t content_size = content.size();
+    printf(" tamaño del contenido %ld\n",content_size);
+    int block = this->allocate_block(content_size);
     if(block == -1){
         printf("Ocurrió un error nachito\n");
         printf("Ahora no hay bloques disponibles\n");

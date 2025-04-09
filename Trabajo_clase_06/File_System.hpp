@@ -24,7 +24,7 @@ int total_blocks = TOTAL_BLOCKS;
 int fat_entries = TOTAL_BLOCKS;
 void load_fat();
 void safe_fat();
-int allocate_block();
+int allocate_block(size_t string_size);
 void free_blocks(int start_block);
 void load_directory();
 // Va a representar la file allocation table 
