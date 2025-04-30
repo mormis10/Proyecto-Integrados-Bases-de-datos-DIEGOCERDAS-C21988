@@ -6,8 +6,8 @@
 
 # Caso threads: 
 ```bash
-g++ -o server SSLServer.cc VSocket.cc SSLSocket.cpp -lssl -lcrypto
-g++ -o client SSLClient.cc VSocket.cc SSLSocket.cpp -lssl -lcrypto
+g++ -o server.out SSLServer.cc VSocket.cc SSLSocket.cpp -lssl -lcrypto
+g++ -o client.out SSLClient.cc VSocket.cc SSLSocket.cpp -lssl -lcrypto
 ```
 
 # eso genera dos ejecutables que hay que emplear en dos terminales distintas, y en el caso del servidor debes de ingresar la contraseña "ci0123"
