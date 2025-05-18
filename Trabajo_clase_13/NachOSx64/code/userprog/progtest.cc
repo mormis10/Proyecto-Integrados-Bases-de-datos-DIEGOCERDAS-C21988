@@ -23,6 +23,8 @@
 void
 StartProcess(const char *filename)
 {
+    printf("Ven bailalo\n");
+    printf("%s\n",filename);
     OpenFile *executable = fileSystem->Open(filename);
     AddrSpace *space;
 

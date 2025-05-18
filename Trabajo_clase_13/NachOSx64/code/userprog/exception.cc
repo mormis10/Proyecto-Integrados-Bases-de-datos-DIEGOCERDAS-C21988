@@ -29,7 +29,7 @@
  *  System call interface: Halt()
  */
 void NachOS_Halt() {		// System call 0
-
+ 
 	DEBUG('a', "Shutdown, initiated by user program.\n");
    	interrupt->Halt();
 
@@ -39,7 +39,12 @@ void NachOS_Halt() {		// System call 0
 /*
  *  System call interface: void Exit( int )
  */
-void NachOS_Exit() {		// System call 1
+void NachOS_Exit() {
+    DEBUG('u', "Exit system call\n");	// Información para debug
+
+   // faltan más cosas que debe completar Exit
+   //
+   currentThread->Finish();	// Current thread is finishing
 }
 
 
@@ -74,8 +79,40 @@ void NachOS_Open() {		// System call 5
 /*
  *  System call interface: OpenFileId Write( char *, int, OpenFileId )
  */
-void NachOS_Write() {		// System call 6
+void NachOS_Write() { 
+   //Ojito nacho, con estas flags y sus siggnificados
+    int addr = machine->ReadRegister(4);  // Dirección en la memoria del usuario
+    int size = machine->ReadRegister(5);  // Cantidad de bytes a escribir
+    int file = machine->ReadRegister(6);  // Descriptor del archivo (0:stdin, 1:stdout)
+    // en este caso va a ser para la salida de la consola
+
+    DEBUG('u', "Write system call: addr=%d, size=%d, file=%d\n", addr, size, file);
+
+    if (file == 1) {  
+        char *buffer = new char[size + 1];
+        int value;
+
+        for (int i = 0; i < size; i++) {
+            if (machine->ReadMem(addr + i, 1, &value)) {
+                buffer[i] = (char)value;
+            } else {
+                printf("Error al leer de la memoria del usuario\n");
+                delete[] buffer;
+                return;
+            }
+        }
+        buffer[size] = '\0';  
+        printf("%s", buffer);
+        delete[] buffer;
+        machine->registers[PrevPCReg] = machine->registers[PCReg];
+        machine->registers[PCReg] = machine->registers[NextPCReg]; 
+       machine->registers[NextPCReg] += 4;
+
+    } else {
+        printf("Solo se soporta escritura a stdout (descriptor 1) por ahora\n");
+    }
 }
+
 
 
 /*

@@ -23,6 +23,9 @@ Timer *timer;				// the hardware timer device,
 // 2007, Jose Miguel Santos Espino
 PreemptiveScheduler* preemptiveScheduler = NULL;
 const long long DEFAULT_TIME_SLICE = 50000;
+BitMap* frame_map = nullptr;  
+Lock* map_concurrency = nullptr;
+
 
 #ifdef FILESYS_NEEDED
 FileSystem  *fileSystem;
@@ -92,6 +95,8 @@ Initialize(int argc, char **argv)
 // 2007, Jose Miguel Santos Espino
     bool preemptiveScheduling = false;
     long long timeSlice;
+    frame_map = new BitMap(128/1024);
+    map_concurrency = new Lock("BitmapLock");
     
 #ifdef USER_PROGRAM
     bool debugUserProg = false;	// single step user program

@@ -61,7 +61,7 @@ AddrSpace::AddrSpace(OpenFile *executable)
 {
     NoffHeader noffH;
     unsigned int i, size;
-     // Reads file intro, number of bytes, and position(ojito nacho)
+    printf("Ven bailalo\n");
     executable->ReadAt((char *)&noffH, sizeof(noffH), 0);
     if ((noffH.noffMagic != NOFFMAGIC) && 
 		(WordToHost(noffH.noffMagic) == NOFFMAGIC))
@@ -84,7 +84,11 @@ AddrSpace::AddrSpace(OpenFile *executable)
 					numPages, size);
 // first, set up the translation 
     pageTable = new TranslationEntry[numPages];
+    int frame = -1;
     for (i = 0; i < numPages; i++) {
+    map_concurrency->Acquire();
+    frame = frame_map->Find();
+    map_concurrency->Release();
 	pageTable[i].virtualPage = i;	// for now, virtual page # = phys page #
 	pageTable[i].physicalPage = i;
 	pageTable[i].valid = true;
@@ -122,6 +126,13 @@ AddrSpace::AddrSpace(OpenFile *executable)
 
 AddrSpace::~AddrSpace()
 {
+    //Ojito nachito aquí vamos a liberar del bitmap los procesos que hayan terminado su ejecución
+    for(unsigned int i = 0; i<numPages; i++){
+        int frame = this->pageTable[i].physicalPage;
+        map_concurrency->Acquire();
+        frame_map->Clear(frame);
+        map_concurrency->Release();
+    }
    delete pageTable;
 }
 
