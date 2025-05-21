@@ -29,6 +29,9 @@
 #include <unistd.h>    
 #include <sys/types.h>
 #include <sys/stat.h>
+#include <sys/types.h>
+#include <sys/socket.h>
+
 
 
 extern NachosOpenFilesTable *openFilesTable = new NachosOpenFilesTable();
@@ -107,7 +110,7 @@ void NachOS_Open() {		// System call 5
    // lo metemos en nuestro buffer, guarda y después incrementa 
    filename[i++] = c;
 
-  }while(i < 256 || c != '\0');
+  }while(i < 256 && c != '\0');
 
   filename[256] = '\0';
 
@@ -296,6 +299,14 @@ void NachOS_CondBroadcast() {		// System call 23
  *  System call interface: Socket_t Socket( int, int )
  */
 void NachOS_Socket() {			// System call 30
+ // leemos el registro cuatro que está reservado para el primer argumento del syscall
+ int domain = machine->ReadRegister(4);
+ //El tipo de socket
+ int type = machine->ReadRegister(5);
+
+ int sockid = socket(domain,type,0);
+ machine->WriteRegister(2,sockid);
+
 }
 
 
@@ -303,6 +314,12 @@ void NachOS_Socket() {			// System call 30
  *  System call interface: Socket_t Connect( char *, int )
  */
 void NachOS_Connect() {		// System call 31
+ int sockid = machine->ReadRegister(4);
+ int ip_pointer = machine->ReadRegister(5);
+ int port = machine->ReadRegister(6);
+ char ip[32];
+ int i = 0;
+ char c;
 }
 
 
