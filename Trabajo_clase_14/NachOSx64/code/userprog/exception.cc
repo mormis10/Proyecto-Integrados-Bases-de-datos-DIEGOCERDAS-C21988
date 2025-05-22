@@ -238,8 +238,8 @@ void NachOS_Read() { // System call 7
     }
     int value;
     for (int i = 0; i < bytesread; i++) {
-      machine->WriteMem(userAddress + i, 1, value);
       value = (int)buffer[i];
+      machine->WriteMem(userAddress + i, 1, value);
     }
 
     delete[] buffer;
