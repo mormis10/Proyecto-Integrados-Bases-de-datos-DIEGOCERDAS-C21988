@@ -6,6 +6,14 @@ NachosOpenFilesTable::NachosOpenFilesTable(){
     this->openFiles = new int[MAX_FILES];
     this->openFilesMap = new BitMap(MAX_FILES);
     this->usage = -1;
+    // Ojito con esto marcamos el 0 para stdin standar input, 1 para standar input y 2 para standar error
+    this->openFilesMap->Mark(0);
+    this->openFilesMap->Mark(1);
+    this->openFilesMap->Mark(2);
+    // Ahora los marcamos
+    this->openFiles[0] = 0;
+    this->openFiles[1] = 1;
+    this->openFiles[2] = 2;
 }
 
 NachosOpenFilesTable::~NachosOpenFilesTable(){

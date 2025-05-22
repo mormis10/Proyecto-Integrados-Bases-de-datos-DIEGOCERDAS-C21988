@@ -35,7 +35,7 @@
 
 
 extern NachosOpenFilesTable *openFilesTable = new NachosOpenFilesTable();
-
+extern Lock *lock = new Lock("Lock for page table"); 
 
 /*
  *  System call interface: Halt()
@@ -85,6 +85,29 @@ void NachOS_Join() {		// System call 3
  *  System call interface: void Create( char * )
  */
 void NachOS_Create() {		// System call 4
+ lock->Acquire();
+ int addr = machine->ReadRegister(4);
+ char filename[256];
+ int value;
+ int i = 0;
+ 
+ do{
+   if(!machine->ReadMem(addr +i,1,&value)){
+      printf("Error leyendo la memoria del usuario\n");
+      return;
+   }
+   filename[i++] = (char)value;
+ }while(i < 255 && value != '\0');
+
+
+ //Garantizamos el final de la cadena
+ filename[256] = '\0';
+
+ int file = creat(filename,0600);
+ close(file);
+ //printf("Se logró con éxito\n");
+ returnFromSystemCall();
+ lock->Release();
 }
 
 
@@ -100,15 +123,15 @@ void NachOS_Open() {		// System call 5
   // Nuestra variable para iterar mientras leemos la cadena
   int i = 0;
   // nuestro caracter pivote para guardar la estructura
-  char c = '\0';
-  // 
+  int c;
   do{
    //Primero empezamos leyendo en la posición de useraddress
    // leemos solo un char en esa posición
    // lo almacenamos en nuestro pivote nachito
-   machine->ReadMem(useraddress +1,1,(int *)&c);
+   machine->ReadMem(useraddress +i,1,&c);
    // lo metemos en nuestro buffer, guarda y después incrementa 
-   filename[i++] = c;
+   printf("%c ",(char)c);
+   filename[i++] = (char)c;
 
   }while(i < 256 && c != '\0');
 
@@ -152,9 +175,8 @@ void NachOS_Write() {
 
     DEBUG('u', "Write system call: addr=%d, size=%d, file=%d\n", addr, size, file);
 
-    if (file == 1) {  
-        char *buffer = new char[size + 1];
-        int value;
+      char *buffer = new char[size + 1];
+      int value;
 
         for (int i = 0; i < size; i++) {
             if (machine->ReadMem(addr + i, 1, &value)) {
@@ -162,16 +184,34 @@ void NachOS_Write() {
             } else {
                 printf("Error al leer de la memoria del usuario\n");
                 delete[] buffer;
+                returnFromSystemCall();
                 return;
             }
         }
-        buffer[size] = '\0';  
+      
+        buffer[size] = '\0'; 
+        printf("%i ",file);
+        if(file == 1){
         printf("%s", buffer);
         delete[] buffer;
         returnFromSystemCall();
-    } else {
-        printf("Solo se soporta escritura a stdout (descriptor 1) por ahora\n");
-    }
+        }else if(file >= 2){
+         // Vamos a escribirlo
+         int unixHandle = openFilesTable->getUnixHandle(file);
+         if(unixHandle != -1){
+            int bytes_written = write(unixHandle,buffer,size);
+            if(bytes_written == -1){
+               printf("Error escribiendo\n");
+               returnFromSystemCall();
+               return;
+            }
+            returnFromSystemCall();
+         }else{
+            printf("File descriptor no soportado\n");
+            returnFromSystemCall();
+         }
+
+        }        
 }
 
 
@@ -180,13 +220,76 @@ void NachOS_Write() {
  *  System call interface: OpenFileId Read( char *, int, OpenFileId )
  */
 void NachOS_Read() {		// System call 7
+ lock->Acquire();
+ int userAddress = machine->ReadRegister(4);
+ int size = machine->ReadRegister(5);
+ int file = machine->ReadRegister(6);
+ // Necesitamos 
+
+ if(!openFilesTable->isOpened(file)){
+   // mandamos al registro de retorno un error
+    machine->WriteRegister(2,-1);
+    returnFromSystemCall();
+    return;
+ }
+ int unixHandle = openFilesTable->getUnixHandle(file);
+ char* buffer = new char[size + 1];
+ int bytesread = read(unixHandle,buffer,size);
+ if(bytesread < 0){
+   delete[] buffer;
+   machine->WriteRegister(2,-1);
+   returnFromSystemCall();
+   return;
+ }
+ int value;
+ for(int i = 0; i<bytesread; i++){
+   value = (int)buffer[i];
+   machine->WriteMem(userAddress + i, 1, value);
+ }
+ printf("Contenido del buffer: ");
+ printf("%s\n",buffer);
+
+ delete[] buffer;
+ machine->WriteRegister(2,bytesread);
+ returnFromSystemCall();
+ lock->Release();
 }
 
 
 /*
  *  System call interface: void Close( OpenFileId )
  */
-void NachOS_Close() {		// System call 8
+void NachOS_Close() {		// System call 
+    lock->Acquire();
+    int nachosHandle = machine->ReadRegister(4);
+  // Hacemos la comprobación de que esté abierto en esta filetable
+  if(nachosHandle < 0){
+   //Tenemos que devolever el error al cerrar el archivo
+   //Registro de retorno envíamos el error
+   machine->WriteRegister(2,-1);
+   returnFromSystemCall();
+    return;
+  }
+   
+   //Estos serían para no tocar el bitmap
+    if(nachosHandle <= 2){
+      // Envíamos el éxito en el registro
+      machine->WriteRegister(2,0);
+      returnFromSystemCall();
+      return;
+    }
+
+    if(!openFilesTable->isOpened(nachosHandle)){
+      machine->WriteRegister(2,-1);
+      returnFromSystemCall();
+      return;
+    }
+
+    // Cerramos la tabla 
+    openFilesTable->Close(nachosHandle);
+    machine->WriteRegister(2,0);
+    returnFromSystemCall();
+    lock->Release();
 }
 
 
