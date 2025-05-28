@@ -7,6 +7,7 @@ NachosOpenFilesTable::NachosOpenFilesTable(){
     this->openFilesMap = new BitMap(MAX_FILES);
     this->usage = -1;
     // Ojito con esto marcamos el 0 para stdin standar input, 1 para standar input y 2 para standar error
+    // por lo tanto estos no tienen un archivo abierto asociado, ojito con eso
     this->openFilesMap->Mark(0);
     this->openFilesMap->Mark(1);
     this->openFilesMap->Mark(2);

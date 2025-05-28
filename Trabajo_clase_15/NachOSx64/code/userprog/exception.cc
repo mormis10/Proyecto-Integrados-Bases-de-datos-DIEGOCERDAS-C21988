@@ -22,6 +22,7 @@
 // of liability and disclaimer of warranty provisions.
 
 #include "NachosOpenFileTable.h"
+#include "addrspace.h"
 #include "copyright.h"
 #include "syscall.h"
 #include "system.h"
@@ -38,6 +39,11 @@ extern Lock *lock = new Lock("Lock for page table");
 #define SOCK_STREAM_NachOS 1
 bool socket_ = false;
 
+typedef struct{
+ int arg;
+ int func_addr;
+}data_fork_t;
+
 /*
  *  System call interface: Halt()
  */
@@ -51,6 +57,24 @@ void returnFromSystemCall() {
   machine->WriteRegister(PrevPCReg, machine->ReadRegister(PCReg));
   machine->WriteRegister(PCReg, machine->ReadRegister(NextPCReg));
   machine->WriteRegister(NextPCReg, machine->ReadRegister(NextPCReg) + 4);
+}
+
+//Another Auxiliar Method
+// Cuando llega aquí el Scheduler ya asigno el hilo como el currentthread
+void ForkHelper(void* ptr){
+   // Esto para que 
+   printf("Termina ejecución\n");
+   data_fork_t* data = (data_fork_t*)ptr;
+   int arg = data->arg;
+   int funcAddr = data->func_addr;
+   currentThread->space->InitRegisters();
+   currentThread->space->RestoreState();
+   //Lo mando a ejecutar, con el espacio que copié
+   //Ahora llamamos a la función con el argumento
+   machine->WriteRegister(PCReg, funcAddr);
+   machine->WriteRegister(NextPCReg, funcAddr + 4);
+   machine->WriteRegister(4,arg);
+   machine->Run();
 }
 
 /*
@@ -182,13 +206,19 @@ void NachOS_Write() {
       return;
     }
   }
-
+ // Vamos a cambiar unas cositas
   buffer[size + 1] = '\0';
   if (!socket_) {
     if (file == 1) {
+      //Standaroutput printeamos en entrada standar la data
+      printf("%s\n",buffer);
       delete[] buffer;
       returnFromSystemCall();
-    } else if (file >= 2) {
+    } else if(file == 2){
+      //Este para standar error
+      fprintf(stderr," %s\n",buffer);
+      returnFromSystemCall();
+     }else if (file >= 2) {
       // Vamos a escribirlo
       int unixHandle = openFilesTable->getUnixHandle(file);
       if (unixHandle != -1) {
@@ -246,8 +276,9 @@ void NachOS_Read() { // System call 7
     machine->WriteRegister(2, bytesread);
     returnFromSystemCall();
   } else {
-    char buffer[size];
-    read(file, buffer, size);
+    char *buffer = new char[size + 1];
+    int bytesread = read(file, buffer, size);
+    buffer[bytesread] = '\0';
     printf("Contenido del buffer %s\n", buffer);
     delete[] buffer;
     returnFromSystemCall();
@@ -296,12 +327,53 @@ void NachOS_Close() { // System call
  *  System call interface: void Fork( void (*func)() )
  */
 void NachOS_Fork() { // System call 9
+ //Obtnemos el valor de la función desde el registro
+ int function_address = machine->ReadRegister(4);
+ /*int function_address = machine->ReadRegister(4);
+ // Creamos el hilo hijo que va a tener los mismos registros de su padre
+ Thread *newThread = new Thread("Thread_from_fork");
+ //En este caso el profe no me lo da pero necesito el entero de dos para hacer esto 
+ 
+
+ //Creamos el espacio de dirrecciones del nuevo hilo en base a las dirrecciones de memoria del proceso acutal
+  // tomamos el address space del padre, Hacemos la copia
+   AddrSpace* parentSpace = currentThread->space;
+   newThread->space = parentSpace;
+   //Voy a copiarlo directamente para este 
+   int param = 2;
+   newThread->Fork((VoidFunctionPtr) ForkHelper,(void*)(intptr_t)param);
+   */
+   int arg = 2;
+   
+   Thread *newThread = new Thread("Thread_from_fork");
+   newThread->Fork(ForkHelper, (void*)(intptr_t)arg);
+   printf("Llega aquí hilo ojito\n");
+   returnFromSystemCall();
 }
 
 /*
  *  System call interface: void Yield()
  */
 void NachOS_Yield() { // System call 10
+ printf("Ojito que entra al Yield\n");
+  Thread *nextThread;
+  //Hacemos esto para bloquear las interrupciones y evitar condiciones de carrera
+  IntStatus oldLevel = interrupt->SetLevel(IntOff);
+  //Llamamos al planificador para que este seleccione el siguiente hilo a estar listo
+  nextThread = scheduler->FindNextToRun();
+  // Hacemos la verificación
+  
+  if(nextThread!=nullptr){
+    // Lo dejamos listo para ejecutar su tarea
+    //printf("Entra aquí forza milan\n");
+    scheduler->ReadyToRun(currentThread);
+    scheduler->Run(nextThread);
+    printf("Entra aquí forza milan\n");
+  }
+  // Vuelvo a correr el estado que capturé
+  interrupt->SetLevel(oldLevel);
+  
+ returnFromSystemCall();
 }
 
 /*
