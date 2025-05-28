@@ -246,8 +246,9 @@ void NachOS_Read() { // System call 7
     machine->WriteRegister(2, bytesread);
     returnFromSystemCall();
   } else {
-    char buffer[size];
-    read(file, buffer, size);
+   char *buffer = new char[size + 1];
+    int bytesread = read(file, buffer, size);
+    buffer[bytesread] = '\0';
     printf("Contenido del buffer %s\n", buffer);
     delete[] buffer;
     returnFromSystemCall();
