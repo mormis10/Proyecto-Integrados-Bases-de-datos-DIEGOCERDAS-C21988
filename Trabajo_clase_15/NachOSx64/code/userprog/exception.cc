@@ -235,6 +235,8 @@ void NachOS_Write() {
       }
     }
   } else {
+    printf("con contenido de la solicitud:\n");
+    printf("%s \n",buffer);
     int written_bytes = write(file, buffer, size);
     printf("Entrón en el modo socket");
     returnFromSystemCall();
@@ -281,6 +283,7 @@ void NachOS_Read() { // System call 7
     buffer[bytesread] = '\0';
     printf("Contenido del buffer %s\n", buffer);
     delete[] buffer;
+    socket_ = false;
     returnFromSystemCall();
   }
   lock->Release();
