@@ -18,6 +18,40 @@ typedef struct{
     int client_portid;
 } client_info;
 
+typedef struct{
+int number_of_islands;
+std::string* island_ips;
+int* ports;
+}island_data_t;
+
+typedef struct{
+std::string figure_name;
+std::string figure;
+char* ip_direction;
+}thread_data;
+
+
+void set_island_data(island_data_t*){
+
+}
+
+void connection(){
+    // Vamos a dejarlo quemado
+
+}
+
+void start_servers_connection(){
+    int sockid, client_sockfd;
+    struct sockaddr_in server_addr, client_addr;
+    socklen_t client_len;
+    pthread_t thread_id;
+
+    sockid = socket(AF_INET,SOCK_STREAM,0);
+    server_addr.sin_family = AF_INET;
+    server_addr.sin_port = htons(5678);  // Puerto del servidor remoto
+    server_addr.sin_addr.s_addr = inet_addr("127.0.0.1");
+}
+
 
 void* client_handle(void* arg) {
     client_info* data = (client_info*)arg;

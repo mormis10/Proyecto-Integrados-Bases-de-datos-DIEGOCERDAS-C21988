@@ -38,6 +38,8 @@ char* buscar_imagen_ascii(const char *nombre_imagen) {
     return "Imagen no encontrada.";
 }
 
+//char* isla_1()
+
 int main() {
     int sockid, haverid;
     struct sockaddr_in server_addr, client_addr;
