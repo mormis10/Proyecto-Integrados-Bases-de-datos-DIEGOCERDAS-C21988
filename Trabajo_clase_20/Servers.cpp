@@ -56,6 +56,22 @@ void *start_servers_connection(void* data){
     std::cout<<"El server de la isal número: " <<tdata->island_id << "\n";
     std::cout<<"Recibió la siguiente solicitud: " <<buffer <<" \n";
     pthread_mutex_unlock(tdata->shared_mutex);
+    pthread_mutex_lock(tdata->shared_mutex);
+    std::cout<<"El server de la isal número: " <<tdata->island_id << "\n";
+    std::cout<<"Recibió la siguiente solicitud: " <<buffer <<" \n";
+    pthread_mutex_unlock(tdata->shared_mutex);
+    //El read se queda esperando básicamete esa es la lógica
+    const char* image = tdata->figure_name.c_str();
+    pthread_mutex_lock(tdata->shared_mutex);
+    std::cout<<image <<"\n";
+    pthread_mutex_unlock(tdata->shared_mutex);
+    write(client_id,image,strlen(image));
+    char buffer2[200];
+    read(client_id,buffer2,200);
+    pthread_mutex_lock(tdata->shared_mutex);
+    const char* image2 = tdata->figure.c_str();
+    pthread_mutex_unlock(tdata->shared_mutex);
+    write(client_id,image2,strlen(image2));
    // Ahora aquí tengo que enviar la data
 }
 

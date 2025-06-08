@@ -9,8 +9,7 @@
 #include <iostream>
 
 
-void server_connection_prove(){
-
+void server_connection_prove(std::string* art, int* sockets){
     int id;
     int ports[6] = {8001,8002,8003,8004,8005,8006};
     struct sockaddr_in server_addr, client_addr;
@@ -35,12 +34,66 @@ void server_connection_prove(){
     
     // Enviamos la solicitud de imagen al servidor remoto
     write(id, solicitud, strlen(solicitud));
-
+    sockets[i] = id;
+    char* buffer = new char[200];
+    read(id,buffer,200);
+    std::string str(buffer);
+    art[i] = str;
+    delete[] buffer;
     }
 
 }
 
+void user_menu(std::string* art, int* sockets){
+    bool menu = true;
+    int option = 0;
+    std::string image_option = "";
+    int flag = 0;
+    while(menu){
+        flag = 0;
+        std::cout<< "Bienvenido al menú de las imagenes de los servers\n";
+        for(int i = 0; i<6; i++){
+            std::cout<<"Imágenes disponibles\n";
+            std::cout<<art[i] <<"\n";
+        }
+        std::cout<<"Ingrese 1 si desea obtener la imagen o 2 para salir del menú\n";
+        std::cin>>option;
+        switch(option){
+            case 1:
+            std::cout<<"Ingrese el nombre de la figura que desea obtener\n";
+            std::cin>>image_option;
+            for(int i = 0; i<6; i++){
+                if(art[i] == image_option){
+                    flag = 1;
+                    write(sockets[i],image_option.c_str(),image_option.size());
+                    char* buffer = new char[200];
+                    read(sockets[i],buffer,200);
+                    std::cout<<"Imagen ASCII Resultante:\n";
+                    std::cout<<buffer <<"\n";
+                    delete[] buffer;
+                }
+            }
+            if(flag == 0){
+                std::cout<<"Imagen no encontrada\n";
+            }
+            
+            break;
+            case 2:
+            std::cout<<"Hasta luego, muchas gracias!!\n";
+            menu = false;
+            break;
+        }
+    }
+    
+}
+
 int main(){
-    server_connection_prove();
+    std::string figures_name[6];
+    int servers_sockets[6];
+    server_connection_prove(figures_name,servers_sockets);
+    user_menu(figures_name,servers_sockets);
+    for(int i = 0; i<6; i++){
+        close(servers_sockets[i]);
+    }
     return 0;
 }
