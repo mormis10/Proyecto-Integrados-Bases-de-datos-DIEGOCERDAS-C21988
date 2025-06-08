@@ -9,7 +9,7 @@
 #include <iostream>
 
 
-void server_connection_prove(std::string* art, int* sockets){
+void server_connection_prove(char* art[], int* sockets){
     int id;
     int ports[6] = {8001,8002,8003,8004,8005,8006};
     struct sockaddr_in server_addr, client_addr;
@@ -36,18 +36,18 @@ void server_connection_prove(std::string* art, int* sockets){
     write(id, solicitud, strlen(solicitud));
     sockets[i] = id;
     char* buffer = new char[200];
-    read(id,buffer,200);
-    std::string str(buffer);
-    art[i] = str;
+    int bytes_read = read(id,buffer,200);
+    buffer[bytes_read] = '\0';
+    art[i] = strdup(buffer);
     delete[] buffer;
     }
 
 }
 
-void user_menu(std::string* art, int* sockets){
+void user_menu(char* art[], int* sockets){
     bool menu = true;
     int option = 0;
-    std::string image_option = "";
+    char image_option[100];
     int flag = 0;
     while(menu){
         flag = 0;
@@ -63,14 +63,15 @@ void user_menu(std::string* art, int* sockets){
             std::cout<<"Ingrese el nombre de la figura que desea obtener\n";
             std::cin>>image_option;
             for(int i = 0; i<6; i++){
-                if(art[i] == image_option){
+                if(strcmp(art[i] , image_option)==0){
                     flag = 1;
-                    write(sockets[i],image_option.c_str(),image_option.size());
-                    char* buffer = new char[200];
-                    read(sockets[i],buffer,200);
+                    write(sockets[i],image_option,strlen(image_option));
+                    char* buffer = new char[512];
+                    read(sockets[i],buffer,512);
                     std::cout<<"Imagen ASCII Resultante:\n";
                     std::cout<<buffer <<"\n";
                     delete[] buffer;
+                    break;
                 }
             }
             if(flag == 0){
@@ -88,7 +89,7 @@ void user_menu(std::string* art, int* sockets){
 }
 
 int main(){
-    std::string figures_name[6];
+    char* figures_name[6];
     int servers_sockets[6];
     server_connection_prove(figures_name,servers_sockets);
     user_menu(figures_name,servers_sockets);

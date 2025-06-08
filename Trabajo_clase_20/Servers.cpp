@@ -11,8 +11,8 @@
 // First prove for 
 
 typedef struct{
-std::string figure_name;
-std::string figure;
+char* figure_name;
+char* figure;
 char* ip_direction;
 int my_port;
 int server_port;
@@ -51,7 +51,8 @@ void *start_servers_connection(void* data){
             perror("Error al aceptar conexión");
         }
     char buffer[200];
-    read(client_id,buffer,200);
+      int bytes_read = read(client_id,buffer,200);
+    buffer[bytes_read] = '\0';
     pthread_mutex_lock(tdata->shared_mutex);
     std::cout<<"El server de la isal número: " <<tdata->island_id << "\n";
     std::cout<<"Recibió la siguiente solicitud: " <<buffer <<" \n";
@@ -61,17 +62,33 @@ void *start_servers_connection(void* data){
     std::cout<<"Recibió la siguiente solicitud: " <<buffer <<" \n";
     pthread_mutex_unlock(tdata->shared_mutex);
     //El read se queda esperando básicamete esa es la lógica
-    const char* image = tdata->figure_name.c_str();
+    const char* image = tdata->figure_name;
     pthread_mutex_lock(tdata->shared_mutex);
     std::cout<<image <<"\n";
     pthread_mutex_unlock(tdata->shared_mutex);
     write(client_id,image,strlen(image));
     char buffer2[200];
-    read(client_id,buffer2,200);
+     int bytes_read2 = read(client_id,buffer2,200);
+     buffer2[bytes_read2] = '\0';
     pthread_mutex_lock(tdata->shared_mutex);
-    const char* image2 = tdata->figure.c_str();
-    pthread_mutex_unlock(tdata->shared_mutex);
+    const char* image2 = "   ******       ******\n"
+"  **      **   **      **\n"
+" **         ** **         **\n"
+"**           ***           **\n"
+"**            *            **\n"
+"**                         **\n"
+" **                       **\n"
+"  **                     **\n"
+"   **                   **\n"
+"     **               **\n"
+"       **           **\n"
+"         **       **\n"
+"           **   **\n"
+"             **\n";
+"";
+    // Pase lo que pase va a enviar este diseño por la prueba
     write(client_id,image2,strlen(image2));
+    pthread_mutex_unlock(tdata->shared_mutex);
    // Ahora aquí tengo que enviar la data
 }
 
@@ -81,9 +98,9 @@ void *start_servers_connection(void* data){
 int main(){
     pthread_t* threads = (pthread_t*) malloc(6*sizeof(pthread_t));
     thread_data* data = (thread_data*) malloc(6*sizeof(thread_data));
-    std::string figure_name[6] = {"gatito","gokú","Batman","LDA","Kaká","Vale"};
+    char* figure_name[6] = {"gatito","gokú","Batman","LDA","Kaká","Vale"};
     // Va a ser básico para estas pruebas del server
-    std::string figure_content[6] = {"A","B","C","D","E","F"};
+    char* figure_content[6] = {"A","B","C","D","E","F"};
     int ports[6] = {8001,8002,8003,8004,8005,8006};
     char* ip = "127.0.0.1";
     pthread_mutex_t mutex;
