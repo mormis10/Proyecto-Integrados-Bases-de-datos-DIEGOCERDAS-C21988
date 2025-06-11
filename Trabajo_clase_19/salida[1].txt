@@ -1,0 +1,161 @@
+salida
+
+
+lab-3-5@lab-3-5-WS-22:~/Downloads/tc19$ ./exec/Server 
+Figure 'trollface' already exists. Skipping.
+Figure 'whale' already exists. Skipping.
+Figure 'cat' already exists. Skipping.
+Figure 'monkey' already exists. Skipping.
+Server IP: 10.1.35.22
+Available figures: trollface,whale,cat,monkey
+Broadcast sent: Response:ServidorA|10.1.35.22|trollface,whale,cat,monkey to 172.16.123.111
+Server listening on port 1234. Waiting for connections...
+Listening for discovery requests on port 5354
+Discovery request received
+Discovery response sent: Response:ServidorA|10.1.35.22|trollface,whale,cat,monkey
+Discovery request received
+Discovery response sent: Response:ServidorA|10.1.35.22|trollface,whale,cat,monkey
+Discovery request received
+Discovery response sent: Response:ServidorA|10.1.35.22|trollface,whale,cat,monkey
+Discovery request received
+Discovery response sent: Response:ServidorA|10.1.35.22|trollface,whale,cat,monkey
+Discovery request received
+Discovery response sent: Response:ServidorA|10.1.35.22|trollface,whale,cat,monkey
+Discovery request received
+Discovery response sent: Response:ServidorA|10.1.35.22|trollface,whale,cat,monkey
+Discovery request received
+Discovery response sent: Response:ServidorA|10.1.35.22|trollface,whale,cat,monkey
+Discovery request received
+Discovery response sent: Response:ServidorA|10.1.35.22|trollface,whale,cat,monkey
+Discovery request received
+Discovery response sent: Response:ServidorA|10.1.35.22|trollface,whale,cat,monkey
+Discovery request received
+Discovery response sent: Response:ServidorA|10.1.35.22|trollface,whale,cat,monkey
+Discovery request received
+Discovery response sent: Response:ServidorA|10.1.35.22|trollface,whale,cat,monkey
+Discovery request received
+Discovery response sent: Response:ServidorA|10.1.35.22|trollface,whale,cat,monkey
+Discovery request received
+Discovery response sent: Response:ServidorA|10.1.35.22|trollface,whale,cat,monkey
+Discovery request received
+Discovery response sent: Response:ServidorA|10.1.35.22|trollface,whale,cat,monkey
+Discovery request received
+Discovery response sent: Response:ServidorA|10.1.35.22|trollface,whale,cat,monkey
+Discovery request received
+Discovery response sent: Response:ServidorA|10.1.35.22|trollface,whale,cat,monkey
+Discovery request received
+Discovery response sent: Response:ServidorA|10.1.35.22|trollface,whale,cat,monkey
+Discovery request received
+Discovery response sent: Response:ServidorA|10.1.35.22|trollface,whale,cat,monkey
+Discovery request received
+Discovery response sent: Response:ServidorA|10.1.35.22|trollface,whale,cat,monkey
+Discovery request received
+Discovery response sent: Response:ServidorA|10.1.35.22|trollface,whale,cat,monkey
+Discovery request received
+Discovery response sent: Response:ServidorA|10.1.35.22|trollface,whale,cat,monkey
+Discovery request received
+Discovery response sent: Response:ServidorA|10.1.35.22|trollface,whale,cat,monkey
+Discovery request received
+Discovery response sent: Response:ServidorA|10.1.35.22|trollface,whale,cat,monkey
+Discovery request received
+Discovery response sent: Response:ServidorA|10.1.35.22|trollface,whale,cat,monkey
+Discovery request received
+Discovery response sent: Response:ServidorA|10.1.35.22|trollface,whale,cat,monkey
+Discovery request received
+Discovery response sent: Response:ServidorA|10.1.35.22|trollface,whale,cat,monkey
+Discovery request received
+Discovery response sent: Response:ServidorA|10.1.35.22|trollface,whale,cat,monkey
+Discovery request received
+Discovery response sent: Response:ServidorA|10.1.35.22|trollface,whale,cat,monkey
+Discovery request received
+Discovery response sent: Response:ServidorA|10.1.35.22|trollface,whale,cat,monkey
+Discovery request received
+Discovery response sent: Response:ServidorA|10.1.35.22|trollface,whale,cat,monkey
+Discovery request received
+Discovery response sent: Response:ServidorA|10.1.35.22|trollface,whale,cat,monkey
+Discovery request received
+Discovery response sent: Response:ServidorA|10.1.35.22|trollface,whale,cat,monkey
+Discovery request received
+Discovery response sent: Response:ServidorA|10.1.35.22|trollface,whale,cat,monkey
+Discovery request received
+Discovery response sent: Response:ServidorA|10.1.35.22|trollface,whale,cat,monkey
+Discovery request received
+Discovery response sent: Response:ServidorA|10.1.35.22|trollface,whale,cat,monkey
+Received request: GET /GET/whale HTTP/1.1
+Host: 10.1.35.22
+
+...
+Parsed URL: '/GET/whale'
+Looking for figure: 'whale'
+Figure found and sent: whale
+Discovery request received
+Discovery response sent: Response:ServidorA|10.1.35.22|trollface,whale,cat,monkey
+Received request: GET /GET/trollface HTTP/1.1
+Host: 10.1.35.22
+
+...
+Parsed URL: '/GET/trollface'
+Looking for figure: 'trollface'
+Figure found and sent: trollface
+Discovery request received
+Discovery response sent: Response:ServidorA|10.1.35.22|trollface,whale,cat,monkey
+Discovery request received
+Discovery response sent: Response:ServidorA|10.1.35.22|trollface,whale,cat,monkey
+Discovery request received
+Discovery response sent: Response:ServidorA|10.1.35.22|trollface,whale,cat,monkey
+Discovery request received
+Discovery response sent: Response:ServidorA|10.1.35.22|trollface,whale,cat,monkey
+Discovery request received
+Discovery response sent: Response:ServidorA|10.1.35.22|trollface,whale,cat,monkey
+Discovery request received
+Discovery response sent: Response:ServidorA|10.1.35.22|trollface,whale,cat,monkey
+Discovery request received
+Discovery response sent: Response:ServidorA|10.1.35.22|trollface,whale,cat,monkey
+Discovery request received
+Discovery response sent: Response:ServidorA|10.1.35.22|trollface,whale,cat,monkey
+Discovery request received
+Discovery response sent: Response:ServidorA|10.1.35.22|trollface,whale,cat,monkey
+
+
+
+lab-3-5@lab-3-5-WS-22:~/Downloads/tc19$ ./exec/Client GET whale
+HTTP/1.1 200 OK
+Content-Type: text/plain; charset=utf-8
+Connection: close
+
+             __ \ / __
+            /  \ | /  \
+                \|/
+           _,.---v---._
+  /\__/\  /            \
+  \_  _/ /              \
+    \ \_|           @ __|
+     \                \_
+      \     ,__/       /
+    ~~~`~~~~~~~~~~~~~~´~~~~lab-3-5@lab-3-5-WS-22:~/Downloads/tc19$ ./exec/Client GET trollface
+HTTP/1.1 200 OK
+Content-Type: text/plain; charset=utf-8
+Connection: close
+
+⣿⣿⣿⣿⣿⣿⣿⠿⠋⣉⣉⣉⣉⣉⣉⡍⠉⢉⡉⠉⠉⠉⣉⣉⣉⣉⣙⠛⠛⠛⠿⢿⣿⣿⣿⣿⣿⣿⣿
+⣿⣿⣿⣿⣿⡿⠃⣴⣿⣿⣿⢟⣫⠭⣖⣛⣻⣯⣭⣭⣽⣛⣛⣓⣒⣒⣒⣒⣒⣒⣒⣢⣄⡉⠻⢿⣿⣿⣿
+⣿⣿⣿⣿⡟⠀⣾⣿⡟⢫⡖⢫⠒⣭⣵⣶⣶⣾⣶⡆⣿⣿⣿⣿⣿⣭⢩⣭⣿⣭⡝⢻⣿⣿⣶⠀⢻⣿⣿
+⣿⣿⣿⡿⠁⣼⣿⣿⣾⣯⣖⣵⡾⠿⠛⠛⠛⠛⠿⣿⣸⣿⣿⣿⣿⡇⣾⣿⣿⣿⣿⣦⣿⣿⣿⡇⠸⣿⣿
+⣿⡿⠋⠀⢚⣛⣿⣿⣟⠛⣿⠁⠀⠀⠀⠀⠘⠳⢦⡄⠙⣿⣿⡿⠿⠟⠋⠁⠀⠀⠀⢙⣟⡿⠿⡿⢤⡉⠻
+⠏⢠⢢⡿⠋⣁⣤⢠⣉⠑⠺⠿⠿⠟⢉⣴⣿⣶⣦⣠⣶⣿⣿⣷⣦⠀⣴⣶⣿⣿⣿⣿⠟⠛⠛⠬⡱⡝⡀
+⠀⣿⣟⠀⡾⡿⠋⠈⠙⠿⣷⣶⣶⣾⣿⣿⣿⢿⠿⠛⢻⣿⣿⣿⣿⣄⡙⠻⣿⣧⣄⣀⣴⠋⣷⣶⡇⡿⡇
+⠀⢿⢹⡄⢱⣶⡄⠘⢿⣶⣄⠈⠙⠛⠶⠶⣶⣾⠀⢞⢉⣉⣛⣿⣿⣿⠇⣀⣨⣛⡻⣿⠟⠀⠹⡯⢞⡁⢀
+⣷⠈⠷⣉⣿⣿⣿⡀⠀⠉⠹⠀⢹⣷⣶⣆⣀⠈⠁⠹⠿⢿⣿⣿⣀⣀⣾⣿⣿⠿⠏⠀⢀⠈⠀⣿⡿⠀⣾
+⣿⣷⣄⠐⢿⣿⣿⣿⣄⠙⣶⠀⣀⠈⠉⠛⠏⢠⣷⣶⣶⣤⠀⣤⣤⡄⢀⣤⣤⡄⢰⡇⠘⠆⠀⣿⡇⢸⣿
+⣿⣿⣿⣧⠈⢿⣿⣿⣿⣧⣈⠀⢿⣿⣶⣦⠀⣀⡀⠈⠉⠉⠀⠉⠉⠁⠈⠉⠉⠀⠀⠀⠀⠀⠀⣿⡇⢸⣿
+⣿⣿⣿⣿⣷⡈⠻⣿⣿⣿⣿⣷⣄⡉⠻⠏⢠⣿⣿⣿⣶⠀⣦⣤⣤⠀⣀⣀⠀⣠⠄⢠⠀⠄⣸⣿⡇⢸⣿
+⣿⣿⣿⣿⣿⣿⣶⣈⠑⠮⣓⠾⣝⡻⠶⣤⣄⣉⡙⠛⠛⠀⠻⠿⠟⠀⠿⠋⠐⠛⠀⣉⣡⣴⣿⣿⡇⢸⣿
+⣿⣿⣿⣿⣿⣿⣿⣿⣷⣦⣌⡙⠳⠯⣝⣲⠭⣟⣻⠿⢿⣿⣿⣗⣒⣚⣞⣿⣿⣿⣿⠿⣫⣾⡿⣹⣧⠘⣿
+⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣧⣄⡀⠛⠿⣧⣤⣟⣛⣃⡤⠤⠤⢤⣤⣤⣤⣤⣤⣿⡿⢛⣤⣿⣿⠀⣿
+⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣷⣦⣤⣉⠙⠻⠿⠿⣿⣿⣿⣿⣿⣿⣶⣶⣶⣿⣿⣿⡿⠀⣼⣿
+⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣶⣶⣦⣤⣤⣉⣉⣙⠛⡛⢛⡛⣛⣉⣡⣴⣾⣿⣿lab-3-5@lab-3-5-WS-22:~/Downloads/tc19$ 
+
+
+
+
+
