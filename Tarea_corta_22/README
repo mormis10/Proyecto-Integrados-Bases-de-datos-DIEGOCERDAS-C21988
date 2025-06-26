@@ -1,0 +1,18 @@
+Para correr:
+
+Make clean
+
+Make
+
+./exec/Server
+
+En otra terminal 
+
+./exec/Client GET whale
+
+
+Para ver la lista de figuras
+
+./exec/Client LIST
+
+Para limpiar el disco hay que eliminar el archivo disk.bin y volver a correr el server
