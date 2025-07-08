@@ -1,0 +1,132 @@
+Using 2194 out of 524288 bytes
+!
+version 12.2
+no service pad
+service timestamps debug uptime
+service timestamps log uptime
+no service password-encryption
+!
+hostname Capa3
+!
+!
+no aaa new-model
+ip subnet-zero
+ip dhcp excluded-address 172.16.123.97
+!
+ip dhcp pool GRUPO2
+   network 172.16.123.32 255.255.255.240
+   default-router 172.16.123.33 
+   dns-server 8.8.8.8 
+!
+ip dhcp pool GRUPO1
+   network 172.16.123.16 255.255.255.240
+   default-router 172.16.123.17 
+   dns-server 8.8.8.8 
+!         
+ip dhcp pool Isla6
+   network 172.16.123.96 255.255.255.240
+   default-router 172.16.123.97 
+   dns-server 8.8.8.8 
+!         
+!         
+!         
+!         
+no file verify auto
+spanning-tree mode pvst
+spanning-tree extend system-id
+!         
+vlan internal allocation policy ascending
+!         
+interface FastEthernet0/1
+ switchport access vlan 110
+ switchport trunk encapsulation dot1q
+ switchport trunk allowed vlan 360
+ switchport mode trunk
+!         
+interface FastEthernet0/2
+ switchport access vlan 120
+ switchport trunk allowed vlan 120
+!         
+interface FastEthernet0/3
+!         
+interface FastEthernet0/4
+!         
+interface FastEthernet0/5
+!         
+interface FastEthernet0/6
+ switchport trunk encapsulation dot1q
+ switchport trunk allowed vlan 360
+ switchport mode trunk
+!         
+interface FastEthernet0/7
+!         
+interface FastEthernet0/8
+!         
+interface FastEthernet0/9
+!         
+interface FastEthernet0/10
+!         
+interface FastEthernet0/11
+!         
+interface FastEthernet0/12
+!         
+interface FastEthernet0/13
+!         
+interface FastEthernet0/14
+!         
+interface FastEthernet0/15
+!         
+interface FastEthernet0/16
+!         
+interface FastEthernet0/17
+!         
+interface FastEthernet0/18
+!         
+interface FastEthernet0/19
+!         
+interface FastEthernet0/20
+!         
+interface FastEthernet0/21
+!         
+interface FastEthernet0/22
+!         
+interface FastEthernet0/23
+!         
+interface FastEthernet0/24
+!         
+interface GigabitEthernet0/1
+ switchport access vlan 110
+ switchport trunk allowed vlan 110
+!         
+interface GigabitEthernet0/2
+ switchport access vlan 120
+ switchport trunk allowed vlan 120
+!         
+interface Vlan1
+ no ip address
+!         
+interface Vlan110
+ ip address 172.16.123.18 255.255.255.240
+!         
+interface Vlan120
+ ip address 172.16.123.34 255.255.255.240
+!         
+interface Vlan360
+ ip address 172.16.123.97 255.255.255.240
+!         
+ip classless
+ip http server
+!         
+!         
+control-plane
+!         
+!         
+line con 0
+line vty 0 4
+ no login 
+line vty 5 15
+ no login 
+!         
+!         
+end       
+
